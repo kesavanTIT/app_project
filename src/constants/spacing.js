@@ -47,14 +47,14 @@ export const SHADOW = {
     elevation: 12,
   },
   brand: {
-    shadowColor: '#FF5722',
+    shadowColor: '#0D1B3E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.40,
     shadowRadius: 12,
     elevation: 8,
   },
   glow: {
-    shadowColor: '#FF5722',
+    shadowColor: '#0D1B3E',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.60,
     shadowRadius: 20,

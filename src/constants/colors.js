@@ -1,74 +1,64 @@
 // ─── FoodRush Design System — Color Tokens ───────────────────────────────────
-// Dark Mode Premium + Glassmorphism + Vibrant Accents
+// Premium Thick Royal Navy Blue Theme
 
 export const COLORS = {
   // ── Backgrounds ──────────────────────────────────────────────────────────────
   bg: {
-    primary:    '#0D0D0D',   // Deep black base
-    secondary:  '#141414',   // Slightly lifted
-    card:       '#1A1A1A',   // Card surface
-    elevated:   '#212121',   // Modal / bottom sheet
-    glass:      'rgba(255,255,255,0.05)',  // Glass surface
-    glassBorder:'rgba(255,255,255,0.10)',  // Glass border
-    overlay:    'rgba(0,0,0,0.75)',        // Modal overlay
+    primary:    '#F4F7FC',   // Cool soft ice-blue background
+    secondary:  '#EBF0F7',   // Slightly deeper cool grey-blue
+    card:       '#FFFFFF',   // Pure white card surface
+    elevated:   '#FFFFFF',   // Modal / bottom sheet
+    overlay:    'rgba(13,27,62,0.75)',     // Modal overlay
   },
 
-  // ── Brand / Primary (Vibrant Orange — Swiggy inspired) ───────────────────────
+  // ── Brand / Primary (Unique Thick Royal Navy Blue) ─────────────────────────
   brand: {
-    primary:    '#FF5722',   // Hot orange
-    light:      '#FF7043',   // Lighter orange
-    dark:       '#E64A19',   // Deeper orange
-    glow:       'rgba(255,87,34,0.20)',    // Glow shadow
-    subtle:     'rgba(255,87,34,0.10)',    // Subtle tint
+    primary:    '#0D1B3E',   // Thick Royal Navy Blue
+    light:      '#162A56',   // Lighter Navy
+    dark:       '#08122B',   // Deepest Navy
+    accent:     '#2563EB',   // Electric Royal Blue
+    glow:       'rgba(13,27,62,0.25)',    // Glow shadow
+    subtle:     'rgba(37,99,235,0.12)',   // Subtle tint
   },
 
-  // ── Accent (Zomato Red-ish, distinct from primary) ────────────────────────
+  // ── Accent Colors ──────────────────────────────────────────────────────────
   accent: {
-    yellow:     '#FFD600',   // Gold — ratings, premium
-    green:      '#00C853',   // Available / success
-    cyan:       '#00E5FF',   // Info highlight
-    pink:       '#F50057',   // Trending badge
-    purple:     '#7C4DFF',   // Premium / offers
+    yellow:     '#FFB800',   // Gold ratings
+    green:      '#10B981',   // Available / success
+    cyan:       '#06B6D4',   // Info highlight
+    purple:     '#6366F1',   // Premium / offers
   },
 
   // ── Text ─────────────────────────────────────────────────────────────────────
   text: {
-    primary:    '#FFFFFF',
-    secondary:  '#B0B0B0',
-    muted:      '#6B6B6B',
-    inverse:    '#0D0D0D',
-    brand:      '#FF5722',
-    success:    '#00C853',
-    danger:     '#FF1744',
-    warning:    '#FFD600',
+    primary:    '#0F172A',   // Deep Slate Dark text
+    secondary:  '#64748B',   // Slate grey muted
+    muted:      '#94A3B8',   // Light muted text
+    inverse:    '#FFFFFF',   // Pure white text
+    brand:      '#0D1B3E',   // Navy text
+    success:    '#10B981',   // Success green
+    danger:     '#EF4444',   // Danger red
   },
 
   // ── UI Elements ──────────────────────────────────────────────────────────────
   ui: {
-    border:     '#2A2A2A',
-    divider:    '#1E1E1E',
-    input:      '#1C1C1C',
-    inputBorder:'#333333',
-    skeleton:   '#242424',
-    skeletonShimmer: '#2E2E2E',
-    tabBar:     '#141414',
-    tabBarBorder: '#2A2A2A',
+    border:     '#E2E8F0',
+    divider:    '#CBD5E1',
+    input:      '#F8FAFC',
+    inputBorder:'#CBD5E1',
+    tabBar:     '#FFFFFF',
+    tabBarBorder: '#E2E8F0',
   },
 
   // ── Status ───────────────────────────────────────────────────────────────────
   status: {
-    success:    '#00C853',
-    successBg:  'rgba(0,200,83,0.12)',
-    danger:     '#FF1744',
-    dangerBg:   'rgba(255,23,68,0.12)',
-    warning:    '#FFD600',
-    warningBg:  'rgba(255,214,0,0.12)',
-    info:       '#00E5FF',
-    infoBg:     'rgba(0,229,255,0.12)',
+    success:    '#10B981',
+    danger:     '#EF4444',
+    warning:    '#FFB800',
+    info:       '#2563EB',
   },
 
-  // ── Rating / Stars ────────────────────────────────────────────────────────
-  rating:       '#FFD600',
+  rating:       '#FFB800',
 };
 
 export default COLORS;

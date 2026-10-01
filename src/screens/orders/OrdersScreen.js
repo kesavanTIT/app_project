@@ -7,7 +7,7 @@ import {
 import { ArrowLeft, CheckCircle, Star } from 'lucide-react-native';
 import { PAST_ORDERS } from '../../data/mockData';
 
-const BRAND  = '#FF5722';
+const BRAND  = '#0D1B3E';
 const WHITE  = '#FFFFFF';
 const TEXT   = '#1A1A1A';
 const GREY   = '#686B78';
@@ -108,7 +108,7 @@ const oc = StyleSheet.create({
 });
 
 // ── Main ─────────────────────────────────────────────────────────────────────
-export default function OrdersScreen({ onBack, onViewBill }) {
+export default function OrdersScreen({ onBack, onViewBill, onReorder }) {
   return (
     <View style={s.root}>
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
@@ -132,7 +132,7 @@ export default function OrdersScreen({ onBack, onViewBill }) {
             key={order.id}
             order={order}
             onViewBill={onViewBill}
-            onReorder={() => {}}
+            onReorder={onReorder}
           />
         ))}
       </ScrollView>

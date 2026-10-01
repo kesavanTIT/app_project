@@ -1,5 +1,5 @@
-// ─── FoodRush — Phone Login Screen (Swiggy-style Layout) ─────────────────────
-import React, { useState, useRef, useEffect } from 'react';
+// ─── FoodRush — Mobile Login Screen (Thick Royal Navy Blue Theme) ─────────────
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,300 +7,306 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
-  Animated,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Zap, ChevronDown } from 'lucide-react-native';
 
-const { height } = Dimensions.get('window');
+import { ArrowLeft } from 'lucide-react-native';
 
-const BRAND   = '#06201E'; // Deep dark teal
-const BRAND_D = '#0A3A36'; // Rich emerald teal
-const ACCENT  = '#36D1A0'; // Mint green accent from screenshot
-const WHITE   = '#FFFFFF';
-const TEXT    = '#1A1A1A';
-const GREY    = '#686B78';
-const BORDER  = '#D8D8D8';
-const DISBTN  = '#E8E8E8';
-const DTEXT   = '#93959F';
-const SHEET   = '#FFFFFF';
+const NAVY       = '#0D1B3E'; // Thick Royal Navy Blue
+const DEEP_NAVY  = '#08122B'; // Deepest Navy
+const BLUE_ACCENT= '#2563EB'; // Electric Royal Blue
+const WHITE      = '#FFFFFF';
+const DARK       = '#0F172A';
+const GREY       = '#64748B';
+const LIGHT      = '#F8FAFC';
+const BORDER     = '#E2E8F0';
+const DISBTN     = '#CBD5E1';
+const DISTXT     = '#94A3B8';
 
-export default function PhoneLoginScreen({ onContinue }) {
-  const [phone, setPhone]   = useState('');
-  const [focused, setFocused] = useState(false);
+export default function PhoneLoginScreen({ onContinue, onBack }) {
+  const [phone, setPhone] = useState('');
 
+  // Validate 10-digit Indian phone number
   const isValid = phone.length === 10 && /^\d{10}$/.test(phone);
 
-  // Floating label animation
-  const labelAnim = useRef(new Animated.Value(0)).current;
-
-  // Sheet slide-up animation
-  const slideAnim = useRef(new Animated.Value(60)).current;
-  const fadeAnim  = useRef(new Animated.Value(0)).current;
-
-  // Button bounce when valid
-  const btnScale = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay: 100, useNativeDriver: true }),
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 400, delay: 100, useNativeDriver: true }),
-    ]).start();
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(labelAnim, {
-      toValue: focused || phone.length > 0 ? 1 : 0,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-  }, [focused, phone]);
-
-  useEffect(() => {
+  const handleSendOTP = () => {
     if (isValid) {
-      Animated.sequence([
-        Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: true, speed: 20 }),
-        Animated.spring(btnScale, { toValue: 1,    useNativeDriver: true, speed: 20 }),
-      ]).start();
+      onContinue(phone);
     }
-  }, [isValid]);
-
-  const labelTop   = labelAnim.interpolate({ inputRange: [0, 1], outputRange: [16, -9] });
-  const labelSize  = labelAnim.interpolate({ inputRange: [0, 1], outputRange: [15, 11] });
-  const labelColor = labelAnim.interpolate({ inputRange: [0, 1], outputRange: [GREY, ACCENT] });
+  };
 
   return (
-    <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={BRAND} />
+    <KeyboardAvoidingView
+      style={styles.root}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <StatusBar barStyle="light-content" backgroundColor={DEEP_NAVY} />
 
-      {/* ── Dark Teal Header ─────────────────────────────────────────────── */}
-      <LinearGradient colors={[BRAND, BRAND_D]} style={s.header}>
-        {/* Logo */}
-        <View style={s.logoWrap}>
-          <View style={s.logoCircle}>
-            <Zap size={32} color={ACCENT} fill={ACCENT} strokeWidth={0} />
-          </View>
+      {/* Top Banner Header - Thick Royal Navy Blue */}
+      <LinearGradient
+        colors={[NAVY, DEEP_NAVY]}
+        style={styles.heroBanner}
+      >
+        <View style={styles.brandRow}>
+          {onBack && (
+            <TouchableOpacity style={styles.backBtn} onPress={onBack} activeOpacity={0.7}>
+              <ArrowLeft size={22} color={WHITE} strokeWidth={2.5} />
+            </TouchableOpacity>
+          )}
+          <Text style={styles.brandLogo}>🛵 FoodRush</Text>
         </View>
-
-        {/* Tagline */}
-        <Text style={s.tagline}>
-          One app for food, grocery, dining {'\n'}&amp; more in minutes!
-        </Text>
+        <Text style={styles.heroTitle}>ACCOUNT LOGIN</Text>
+        <Text style={styles.heroSub}>Enter your phone number to get instant OTP</Text>
       </LinearGradient>
 
-      {/* ── White Bottom Sheet ──────────────────────────────────────────── */}
-      <KeyboardAvoidingView
-        style={s.sheetOuter}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <Animated.View
-          style={[s.sheet, { transform: [{ translateY: slideAnim }], opacity: fadeAnim }]}
-        >
-          {/* Title */}
-          <Text style={s.title}>Enter your number</Text>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Main Phone Card */}
+        <View style={styles.card}>
+          <Text style={styles.inputLabel}>Enter Mobile Number</Text>
 
-          {/* Phone Input */}
-          <View style={[s.inputBox, focused && s.inputBoxActive]}>
-            {/* Floating label */}
-            <Animated.Text
-              style={[
-                s.floatLabel,
-                {
-                  top:             labelTop,
-                  fontSize:        labelSize,
-                  color:           labelColor,
-                  backgroundColor: WHITE,
-                  paddingHorizontal: 3,
-                },
-              ]}
-            >
-              Mobile Number
-            </Animated.Text>
+          <View style={styles.inputRow}>
+            {/* Country Code Pill */}
+            <View style={styles.countryPill}>
+              <Text style={styles.flagEmoji}>🇮🇳</Text>
+              <Text style={styles.countryCode}>+91</Text>
+            </View>
 
-            {/* Dial code */}
-            <TouchableOpacity style={s.dialWrap} activeOpacity={0.7}>
-              <Text style={s.flag}>🇮🇳</Text>
-              <Text style={s.dialCode}>+91</Text>
-              <ChevronDown size={14} color={GREY} strokeWidth={2} />
-            </TouchableOpacity>
-
-            {/* Divider */}
-            <View style={s.divider} />
-
-            {/* Input */}
+            {/* 10-digit Phone TextInput */}
             <TextInput
-              style={s.input}
-              keyboardType="phone-pad"
+              style={styles.phoneInput}
+              placeholder="98765 43210"
+              placeholderTextColor="#94A3B8"
+              keyboardType="number-pad"
               maxLength={10}
               value={phone}
-              onChangeText={setPhone}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              selectionColor={ACCENT}
-              cursorColor={ACCENT}
-              returnKeyType="done"
+              onChangeText={(txt) => setPhone(txt.replace(/[^0-9]/g, ''))}
+              autoFocus
             />
           </View>
 
-          {/* Continue Button */}
-          <Animated.View style={{ transform: [{ scale: btnScale }] }}>
-            <TouchableOpacity
-              style={[s.btn, isValid && s.btnActive]}
-              disabled={!isValid}
-              activeOpacity={0.85}
-              onPress={() => onContinue && onContinue(phone)}
-            >
-              <Text style={[s.btnTxt, isValid && s.btnTxtActive]}>Continue</Text>
-            </TouchableOpacity>
-          </Animated.View>
+          {/* Continue / Get OTP Button - Thick Navy Blue */}
+          <TouchableOpacity
+            style={[styles.continueBtn, !isValid && styles.continueBtnDisabled]}
+            onPress={handleSendOTP}
+            disabled={!isValid}
+            activeOpacity={0.88}
+          >
+            <Text style={[styles.continueTxt, !isValid && styles.continueTxtDisabled]}>
+              GET OTP ➔
+            </Text>
+          </TouchableOpacity>
 
-          {/* Legal */}
-          <Text style={s.legal}>
-            By clicking, I accept the{' '}
-            <Text style={s.link}>Privacy policy</Text>,{'\n'}
-            <Text style={s.link}>FoodRush terms of use</Text>
-            {' '}and{' '}
-            <Text style={s.link}>Instamart terms of use</Text>
+        </View>
+
+        {/* Professional Trust Badges */}
+        <View style={styles.trustGrid}>
+          <View style={styles.trustItem}>
+            <Text style={styles.trustIcon}>⚡</Text>
+            <View>
+              <Text style={styles.trustTitle}>Fast Delivery</Text>
+              <Text style={styles.trustSub}>In 20-30 Mins</Text>
+            </View>
+          </View>
+
+          <View style={styles.trustItem}>
+            <Text style={styles.trustIcon}>🛡️</Text>
+            <View>
+              <Text style={styles.trustTitle}>100% Secure</Text>
+              <Text style={styles.trustSub}>Instant SMS OTP</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Terms Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.termsText}>
+            By continuing, you agree to FoodRush's{'\n'}
+            <Text style={styles.link}>Terms of Service</Text> & <Text style={styles.link}>Privacy Policy</Text>
           </Text>
-        </Animated.View>
-      </KeyboardAvoidingView>
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: BRAND },
-
-  // ── Header ──────────────────────────────────────────────────────────────────
-  header: {
-    height: height * 0.38,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 32,
-    paddingHorizontal: 20,
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
-  logoWrap: { marginBottom: 16 },
-  logoCircle: {
-    width: 68,
-    height: 68,
+  heroBanner: {
+    paddingTop: Platform.OS === 'ios' ? 60 : 44,
+    paddingBottom: 32,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    elevation: 8,
+    shadowColor: NAVY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
     borderRadius: 18,
-    backgroundColor: WHITE,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
   },
-
-  tagline: {
-    color: WHITE,
-    fontSize: 15,
-    fontWeight: '700',
-    textAlign: 'center',
-    lineHeight: 22,
-    opacity: 0.95,
-  },
-
-  // ── Sheet ────────────────────────────────────────────────────────────────────
-  sheetOuter: {
-    flex: 1,
-    backgroundColor: SHEET,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    marginTop: -20,
-  },
-  sheet: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 28,
-  },
-  title: {
+  brandLogo: {
     fontSize: 22,
-    fontWeight: '800',
-    color: TEXT,
-    letterSpacing: -0.3,
+    fontWeight: '900',
+    color: WHITE,
+    letterSpacing: -0.5,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: WHITE,
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  heroSub: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.85)',
+  },
+  scroll: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
+    justifyContent: 'space-between',
+  },
+  card: {
+    backgroundColor: WHITE,
+    borderRadius: 20,
+    padding: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
     marginBottom: 24,
   },
-
-  // ── Input ────────────────────────────────────────────────────────────────────
-  inputBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: BORDER,
-    borderRadius: 8,
-    height: 56,
-    paddingHorizontal: 12,
-    marginBottom: 28,
-    position: 'relative',
-    backgroundColor: WHITE,
-  },
-  inputBoxActive: { borderColor: ACCENT },
-  floatLabel: {
-    position: 'absolute',
-    left: 12,
-    zIndex: 1,
-    fontWeight: '500',
-  },
-  dialWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingRight: 4,
-  },
-  flag:     { fontSize: 20 },
-  dialCode: { fontSize: 15, fontWeight: '700', color: TEXT },
-  divider: {
-    width: 1.5,
-    height: 22,
-    backgroundColor: BORDER,
-    marginHorizontal: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    color: TEXT,
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: DARK,
+    marginBottom: 12,
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
-    height: '100%',
   },
-
-  // ── Button ───────────────────────────────────────────────────────────────────
-  btn: {
-    height: 52,
-    borderRadius: 10,
-    backgroundColor: DISBTN,
+  inputRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 20,
+    gap: 10,
   },
-  btnActive: {
-    backgroundColor: ACCENT,
-    shadowColor: ACCENT,
+  countryPill: {
+    height: 52,
+    paddingHorizontal: 14,
+    backgroundColor: LIGHT,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: BORDER,
+    gap: 6,
+  },
+  flagEmoji: {
+    fontSize: 18,
+  },
+  countryCode: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: DARK,
+  },
+  phoneInput: {
+    flex: 1,
+    height: 52,
+    backgroundColor: LIGHT,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    fontSize: 17,
+    fontWeight: '700',
+    color: DARK,
+    borderWidth: 1,
+    borderColor: BORDER,
+    letterSpacing: 1,
+  },
+  continueBtn: {
+    height: 54,
+    backgroundColor: NAVY,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: NAVY,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
-  btnTxt:       { fontSize: 15, fontWeight: '700', color: DTEXT },
-  btnTxtActive: { color: BRAND, fontWeight: '800' },
-
-  // ── Legal ─────────────────────────────────────────────────────────────────────
-  legal: {
+  continueBtnDisabled: {
+    backgroundColor: DISBTN,
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  continueTxt: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: WHITE,
+    letterSpacing: 0.5,
+  },
+  continueTxtDisabled: {
+    color: DISTXT,
+  },
+  trustGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: WHITE,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  trustItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  trustIcon: {
+    fontSize: 22,
+  },
+  trustTitle: {
     fontSize: 12,
+    fontWeight: '800',
+    color: DARK,
+  },
+  trustSub: {
+    fontSize: 10,
+    color: GREY,
+  },
+  footer: {
+    alignItems: 'center',
+  },
+  termsText: {
+    fontSize: 11,
     color: GREY,
     textAlign: 'center',
-    lineHeight: 18,
-    paddingHorizontal: 8,
+    lineHeight: 16,
   },
   link: {
+    color: NAVY,
     fontWeight: '700',
-    color: TEXT,
-    textDecorationLine: 'underline',
   },
 });

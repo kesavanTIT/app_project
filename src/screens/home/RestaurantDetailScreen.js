@@ -10,7 +10,7 @@ import {
 } from 'lucide-react-native';
 import { MENU } from '../../data/mockData';
 
-const BRAND  = '#FF5722';
+const BRAND  = '#0D1B3E';
 const WHITE  = '#FFFFFF';
 const TEXT   = '#1A1A1A';
 const GREY   = '#686B78';

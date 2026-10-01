@@ -9,7 +9,7 @@ import {
   CheckCircle, Clock,
 } from 'lucide-react-native';
 
-const BRAND  = '#FF5722';
+const BRAND  = '#0D1B3E';
 const WHITE  = '#FFFFFF';
 const TEXT   = '#1A1A1A';
 const GREY   = '#686B78';
@@ -189,14 +189,31 @@ export default function OrderDetailScreen({ order, onBack }) {
         <View style={s.billCard}>
           <Text style={s.billTitle}>BILL DETAILS</Text>
 
-          {/* Items */}
-          {items.map((item, i) => (
-            <View key={i} style={s.billItemRow}>
-              <VegBadge veg={item.veg} />
-              <Text style={s.billItemName}>{item.name} x {item.qty}</Text>
-              <Text style={s.billItemPrice}>₹{(item.discounted || item.price || 0) * (item.qty || 1)}</Text>
-            </View>
-          ))}
+          {/* Items (Grouped by Store if Multi-Restaurant) */}
+          {o.storeGroups && o.storeGroups.length > 0 ? (
+            o.storeGroups.map((grp) => (
+              <View key={grp.name} style={{ marginBottom: 12 }}>
+                <Text style={{ fontSize: 13, fontWeight: '800', color: BRAND, marginBottom: 6 }}>
+                  {grp.emoji} {grp.name.toUpperCase()}
+                </Text>
+                {grp.items.map((item, i) => (
+                  <View key={i} style={s.billItemRow}>
+                    <VegBadge veg={item.veg} />
+                    <Text style={s.billItemName}>{item.name} x {item.qty}</Text>
+                    <Text style={s.billItemPrice}>₹{(item.discounted || item.price || 0) * (item.qty || 1)}</Text>
+                  </View>
+                ))}
+              </View>
+            ))
+          ) : (
+            items.map((item, i) => (
+              <View key={i} style={s.billItemRow}>
+                <VegBadge veg={item.veg} />
+                <Text style={s.billItemName}>{item.name} x {item.qty}</Text>
+                <Text style={s.billItemPrice}>₹{(item.discounted || item.price || 0) * (item.qty || 1)}</Text>
+              </View>
+            ))
+          )}
 
           <View style={s.sectionDivider} />
 

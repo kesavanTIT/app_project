@@ -9,7 +9,7 @@ import {
   MapPin, Clock, Zap, Leaf, Gift,
 } from 'lucide-react-native';
 
-const BRAND  = '#FF5722';
+const BRAND  = '#0D1B3E';
 const WHITE  = '#FFFFFF';
 const TEXT   = '#1A1A1A';
 const GREY   = '#686B78';
@@ -69,17 +69,55 @@ export default function CartScreen({ cart, restaurant, location, onAdd, onRemove
   const [payMethod, setPayMethod]       = useState('BHIM UPI');
   const [couponApplied, setCouponApplied] = useState(true);
 
-  const subtotal  = cart.reduce((sum, i) => sum + i.discounted * i.qty, 0);
-  const savings   = cart.reduce((sum, i) => sum + (i.price - i.discounted) * i.qty, 0);
+  // Group cart items by Restaurant
+  const groupedItems = cart.reduce((groups, item) => {
+    const storeName = item.restaurantName || restaurant?.name || 'FoodRush Restaurant';
+    if (!groups[storeName]) {
+      groups[storeName] = {
+        name: storeName,
+        emoji: item.restaurantEmoji || restaurant?.emoji || '🍛',
+        items: [],
+      };
+    }
+    groups[storeName].items.push(item);
+    return groups;
+  }, {});
+
+  const storeGroups = Object.values(groupedItems);
+  const isMultiStore = storeGroups.length > 1;
+
+  const subtotal  = cart.reduce((sum, i) => sum + (i.discounted || i.price) * i.qty, 0);
+  const savings   = cart.reduce((sum, i) => sum + (i.price - (i.discounted || i.price)) * i.qty, 0);
   const gst       = Math.round(subtotal * GST_RATE);
   const platformFeeWithGst = PLATFORM_FEE + Math.round(PLATFORM_FEE * 0.18);
   const discount  = couponApplied ? Math.min(savings, Math.round(subtotal * 0.30)) : 0;
-  const total     = subtotal + PACKAGING + platformFeeWithGst + gst - discount;
+  const multiStoreDeliveryExtra = isMultiStore ? (storeGroups.length - 1) * 15 : 0;
+  const total     = subtotal + PACKAGING + platformFeeWithGst + gst + multiStoreDeliveryExtra - discount;
 
   const handlePlaceOrder = () => {
-    Alert.alert('Order Placed! 🎉', `Your order of ₹${total} has been placed successfully!`, [
-      { text: 'Track Order', onPress: () => onPlaceOrder && onPlaceOrder({ items: cart, cart, restaurant, location, total, payMethod, deliveryType }) },
-    ]);
+    const orderId = `FR-MULTI-${Math.floor(100000 + Math.random() * 900000)}`;
+    Alert.alert(
+      isMultiStore ? 'Multi-Store Order Placed! 🎉' : 'Order Placed! 🎉',
+      `Your combined order of ₹${total} from ${storeGroups.length} restaurant(s) has been placed successfully!`,
+      [
+        {
+          text: 'Track Order',
+          onPress: () => onPlaceOrder && onPlaceOrder({
+            id: orderId,
+            items: cart,
+            cart,
+            storeGroups,
+            isMultiStore,
+            restaurant: isMultiStore ? { name: `Combined (${storeGroups.length} Stores)` } : (restaurant || { name: storeGroups[0]?.name }),
+            location,
+            total,
+            payMethod,
+            deliveryType,
+            date: 'Just now',
+          }),
+        },
+      ]
+    );
   };
 
   return (
@@ -91,9 +129,11 @@ export default function CartScreen({ cart, restaurant, location, onAdd, onRemove
         <TouchableOpacity onPress={onBack} style={s.backBtn}>
           <ArrowLeft size={22} color={TEXT} strokeWidth={2} />
         </TouchableOpacity>
-        <View>
-          <Text style={s.headerTitle}>{restaurant?.name}</Text>
-          <Text style={s.headerSub}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.headerTitle} numberOfLines={1}>
+            {isMultiStore ? `🛒 Multi-Store Cart (${storeGroups.length} Stores)` : (restaurant?.name || storeGroups[0]?.name || 'Your Cart')}
+          </Text>
+          <Text style={s.headerSub} numberOfLines={1}>
             <MapPin size={11} color={GREY} strokeWidth={2} />
             {'  '}{location?.area || 'Pandiyan Nagar'}  ›
           </Text>
@@ -105,39 +145,41 @@ export default function CartScreen({ cart, restaurant, location, onAdd, onRemove
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
-        {/* ── Cart Items ───────────────────────────────────────────────── */}
-        <SectionBlock title="">
-          {cart.map((item, i) => (
-            <View key={item.id}>
-              <View style={s.cartItem}>
-                {/* Veg indicator */}
-                <View style={[s.vegDot, { borderColor: item.veg ? GREEN : BRAND }]}>
-                  <View style={[s.vegInner, { backgroundColor: item.veg ? GREEN : BRAND }]} />
+        {/* ── Multi-Restaurant Cart Items ──────────────────────────────── */}
+        {storeGroups.map((group) => (
+          <SectionBlock key={group.name} title={`${group.emoji} ${group.name.toUpperCase()}`}>
+            {group.items.map((item, i) => (
+              <View key={item.id}>
+                <View style={s.cartItem}>
+                  {/* Veg indicator */}
+                  <View style={[s.vegDot, { borderColor: item.veg ? GREEN : BRAND }]}>
+                    <View style={[s.vegInner, { backgroundColor: item.veg ? GREEN : BRAND }]} />
+                  </View>
+                  <Text style={s.itemName} numberOfLines={2}>{item.name}</Text>
+                  <View style={s.itemRight}>
+                    <CartStepper
+                      qty={item.qty}
+                      onAdd={() => onAdd(item)}
+                      onRemove={() => onRemove(item.id)}
+                    />
+                    <Text style={s.itemPrice}>₹{(item.discounted || item.price) * item.qty}</Text>
+                  </View>
                 </View>
-                <Text style={s.itemName} numberOfLines={2}>{item.name}</Text>
-                <View style={s.itemRight}>
-                  <CartStepper
-                    qty={item.qty}
-                    onAdd={() => onAdd(item)}
-                    onRemove={() => onRemove(item.id)}
-                  />
-                  <Text style={s.itemPrice}>₹{item.discounted * item.qty}</Text>
-                </View>
+                {i < group.items.length - 1 && <View style={s.cartDivider} />}
               </View>
-              {i < cart.length - 1 && <View style={s.cartDivider} />}
-            </View>
-          ))}
+            ))}
 
-          {/* Cooking requests / cutlery */}
-          <View style={s.extras}>
-            <TouchableOpacity style={s.extraBtn}>
-              <Text style={s.extraTxt}>✏️ Cooking requests</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.extraBtn}>
-              <Text style={s.extraTxt}>☐ Cutlery Needed</Text>
-            </TouchableOpacity>
-          </View>
-        </SectionBlock>
+            {/* Cooking requests / cutlery */}
+            <View style={s.extras}>
+              <TouchableOpacity style={s.extraBtn}>
+                <Text style={s.extraTxt}>✏️ Cooking requests</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={s.extraBtn}>
+                <Text style={s.extraTxt}>☐ Cutlery Needed</Text>
+              </TouchableOpacity>
+            </View>
+          </SectionBlock>
+        ))}
 
         {/* ── Savings Corner ──────────────────────────────────────────── */}
         <SectionBlock title="SAVINGS CORNER">
